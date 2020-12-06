@@ -22,6 +22,7 @@ ImageTransportImageStreamer::ImageTransportImageStreamer(const async_web_server_
 {
   output_width_ = request.get_query_param_value_or_default<int>("width", -1);
   output_height_ = request.get_query_param_value_or_default<int>("height", -1);
+  output_fps_ = request.get_query_param_value_or_default<int>("fps", -1);
   invert_ = request.has_query_param("invert");
   default_transport_ = request.get_query_param_value_or_default("default_transport", "raw");
 }
@@ -44,6 +45,10 @@ void ImageTransportImageStreamer::start()
     }
   }
   image_sub_ = it_.subscribe(topic_, 1, &ImageTransportImageStreamer::imageCallback, this, hints);
+
+  if (output_fps_ > 0) {
+    output_rate_.reset(new ros::Rate((double)output_fps_)); 
+  }
 }
 
 void ImageTransportImageStreamer::initialize(const cv::Mat &)
@@ -144,6 +149,10 @@ void ImageTransportImageStreamer::imageCallback(const sensor_msgs::ImageConstPtr
 
     last_frame = ros::Time::now();
     sendImage(output_size_image, msg->header.stamp);
+
+    if (output_rate_) {
+      output_rate_->sleep();
+    }
   }
   catch (cv_bridge::Exception &e)
   {

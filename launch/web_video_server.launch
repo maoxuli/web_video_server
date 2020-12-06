@@ -1,0 +1,12 @@
+<launch>
+  <arg name="output" default="screen" />
+  <arg name="respawn" default="false" />
+  <arg name="name" default="web_video_server" />
+  <arg name="port" default="8080" />
+
+  <node pkg="web_video_server" type="web_video_server" name="$(arg name)" 
+        output="$(arg output)" respawn="$(arg respawn)">
+    <param name="port" value="$(arg port)" />
+  </node>
+  
+</launch>

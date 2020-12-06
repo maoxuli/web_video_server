@@ -62,9 +62,11 @@ protected:
   image_transport::Subscriber image_sub_;
   int output_width_;
   int output_height_;
+  int output_fps_; 
   bool invert_;
   std::string default_transport_;
 
+  std::shared_ptr<ros::Rate> output_rate_; 
   ros::Time last_frame;
   cv::Mat output_size_image;
   boost::mutex send_mutex_;
